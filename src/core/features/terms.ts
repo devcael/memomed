@@ -46,19 +46,19 @@ export const updateUserTermStat = async (
   termString: string, // 'term.term' desnormalizado
   isCorrect: boolean,
 ): Promise<void> => {
-  const docId = `${userId}_${termId}` // Chave composta
+  const docId = `${userId}_${termId}`
   const statRef = doc(db, 'userTermStats', docId)
   const docSnap = await getDoc(statRef)
 
   const fieldToIncrement = isCorrect ? 'correctCount' : 'incorrectCount'
 
   if (docSnap.exists()) {
-    // Documento existe, apenas incrementa
+   
     await updateDoc(statRef, {
       [fieldToIncrement]: increment(1),
     })
   } else {
-    // Documento não existe, cria um novo
+  
     const newStatDoc: UserTermStatsDocument = {
       userId: userId,
       termId: termId,
