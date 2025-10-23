@@ -30,7 +30,6 @@ export interface TermActivity {
 
 export const getUserProgress = async (userId: string): Promise<UserProgress> => {
   try {
-    // Buscar todas as estatísticas do usuário
     const statsQuery = query(collection(db, 'userTermStats'), where('userId', '==', userId))
     const statsSnapshot = await getDocs(statsQuery)
 
@@ -42,7 +41,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
         }) as UserTermStats,
     )
 
-    // Calcular progresso por categoria
     const categoryMap = new Map<
       string,
       {
@@ -52,7 +50,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       }
     >()
 
-    // Buscar todos os termos para obter categorias completas
     const termsQuery = query(collection(db, 'terms'))
     const termsSnapshot = await getDocs(termsQuery)
     const allTerms = termsSnapshot.docs.map((doc) => ({
@@ -62,7 +59,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       category: doc.data().category || '',
     }))
 
-    // Inicializar categorias com todos os termos
     allTerms.forEach((term) => {
       if (!categoryMap.has(term.category)) {
         categoryMap.set(term.category, {
@@ -75,9 +71,7 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       category.totalTerms++
     })
 
-    // Processar estatísticas do usuário
     userStats.forEach((stat) => {
-      // Encontrar a categoria do termo
       const term = allTerms.find((t) => t.id === stat.termId)
       if (term && categoryMap.has(term.category)) {
         const category = categoryMap.get(term.category)!
@@ -86,7 +80,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       }
     })
 
-    // Converter para array de progresso por categoria
     const categoryProgress: CategoryProgress[] = Array.from(categoryMap.entries()).map(
       ([categoryName, data]) => ({
         category: categoryName,
@@ -102,7 +95,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       }),
     )
 
-    // Calcular estatísticas gerais
     const totalCorrectAnswers = userStats.reduce((sum, stat) => sum + stat.correctCount, 0)
     const totalAttempts = userStats.reduce(
       (sum, stat) => sum + stat.correctCount + stat.incorrectCount,
@@ -111,7 +103,6 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
     const averageAccuracy =
       totalAttempts > 0 ? Math.round((totalCorrectAnswers / totalAttempts) * 100) : 0
 
-    // Encontrar termos mais fortes e mais fracos
     const termsWithStats = userStats
       .filter((stat) => stat.correctCount + stat.incorrectCount >= 3) // Mínimo 3 tentativas
       .map((stat) => ({
@@ -127,7 +118,7 @@ export const getUserProgress = async (userId: string): Promise<UserProgress> => 
       totalTermsStudied: userStats.length,
       averageAccuracy,
       categoryProgress,
-      recentActivity: [], // Implementar se necessário
+      recentActivity: [], //  TODO: Implementar se necessário
       strongestTerms,
       weakestTerms,
     }

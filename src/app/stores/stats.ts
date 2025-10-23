@@ -74,7 +74,6 @@ export const useStatsStore = defineStore('stats', () => {
       if (category) {
         termsByCategory.value[category] = terms
       } else {
-        // Organizar por categoria
         const organized: Record<string, Term[]> = {}
         terms.forEach((term) => {
           if (!organized[term.category]) {
@@ -103,13 +102,13 @@ export const useStatsStore = defineStore('stats', () => {
   }
 
   return {
-    // State
+
     userProgress,
     termsByCategory,
     isLoading,
     error,
 
-    // Getters
+
     totalTermsStudied,
     averageAccuracy,
     categoryProgress,
@@ -118,7 +117,7 @@ export const useStatsStore = defineStore('stats', () => {
     bestCategory,
     needsImprovementCategory,
 
-    // Actions
+
     fetchUserProgress,
     fetchTermsByCategory,
     refreshStats,

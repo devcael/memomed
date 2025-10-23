@@ -38,15 +38,13 @@ const router = createRouter({
   ],
 })
 
-// Guard de navegação para proteger rotas autenticadas
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  // Verifica se a rota requer autenticação
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   }
-  // Se está autenticado e tentando acessar o login, redireciona para dashboard
+
   else if (to.path === '/login' && authStore.isAuthenticated) {
     next('/dashboard')
   } else {

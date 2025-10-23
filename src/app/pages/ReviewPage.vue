@@ -257,12 +257,10 @@ const categories = computed(() => {
 const filteredTerms = computed(() => {
   let filtered = terms.value
 
-  // Filtrar por categoria
   if (selectedCategory.value) {
     filtered = filtered.filter((term) => term.category === selectedCategory.value)
   }
 
-  // Filtrar por busca
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(
@@ -334,12 +332,10 @@ const goToQuiz = () => {
   router.push('/quiz')
 }
 
-// Resetar página quando filtros mudarem
 const resetPagination = () => {
   currentPage.value = 1
 }
 
-// Watchers para resetar paginação
 import { watch } from 'vue'
 watch([selectedCategory, searchQuery], resetPagination)
 

@@ -348,11 +348,9 @@ const submitAnswer = async () => {
 }
 
 const nextQuestion = () => {
-  // Reset form
   userAnswer.value = ''
   selectedOption.value = ''
 
-  // Generate new question
   gameStore.generateNextQuestion()
 }
 
@@ -373,7 +371,6 @@ const goToDashboard = () => {
   router.push('/dashboard')
 }
 
-// Carrega os termos quando a página é montada
 onMounted(async () => {
   // Carrega as configurações salvas
   settingsStore.loadSettings()

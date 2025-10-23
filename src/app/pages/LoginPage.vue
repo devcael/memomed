@@ -85,7 +85,6 @@ const handleSubmit = async () => {
   await authStore.login(username.value.trim(), password.value)
 }
 
-// Observa mudanças no estado de autenticação
 watch(
   () => authStore.isAuthenticated,
   (isAuthenticated) => {
@@ -96,7 +95,6 @@ watch(
   },
 )
 
-// Observa mudanças no erro de autenticação
 watch(
   () => authStore.error,
   (error) => {
