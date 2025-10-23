@@ -165,17 +165,22 @@
             >
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-neutral-200">{{ category.category }}</h3>
-                <span class="text-sm text-neutral-400">{{ category.accuracy }}%</span>
+                <span class="text-sm text-neutral-400"
+                  >{{ getCategoryStudyProgress(category) }}%</span
+                >
               </div>
 
               <div class="text-xs text-neutral-500 mb-2">
                 {{ category.studiedTerms }}/{{ category.totalTerms }} termos estudados
+                <span v-if="category.totalAttempts > 0" class="ml-2">
+                  • {{ category.accuracy }}% de acerto
+                </span>
               </div>
 
               <div class="w-full bg-neutral-700 rounded-full h-2">
                 <div
                   class="bg-linear-to-r from-blue-500 to-emerald-400 h-2 rounded-full transition-all duration-500"
-                  :style="{ width: `${category.accuracy}%` }"
+                  :style="{ width: `${getCategoryStudyProgress(category)}%` }"
                 ></div>
               </div>
             </div>
@@ -245,6 +250,12 @@ const totalIncorrectAnswers = computed(() => {
   const correct = totalCorrectAnswers.value
   return total - correct
 })
+
+// Função para calcular o progresso de estudos por categoria
+const getCategoryStudyProgress = (category: any) => {
+  if (category.totalTerms === 0) return 0
+  return Math.round((category.studiedTerms / category.totalTerms) * 100)
+}
 
 const handleLogout = () => {
   authStore.logout()
