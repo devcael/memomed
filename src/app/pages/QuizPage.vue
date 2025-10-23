@@ -18,6 +18,14 @@
 
           <Button
             variant="outline"
+            @click="showSettings = !showSettings"
+            class="border-neutral-700 text-neutral-200 hover:bg-neutral-800 hover:text-neutral-100"
+          >
+            ⚙️ Configurações
+          </Button>
+
+          <Button
+            variant="outline"
             @click="goToDashboard"
             class="border-neutral-700 text-neutral-200 hover:bg-neutral-800 hover:text-neutral-100"
           >
@@ -29,6 +37,38 @@
 
     <!-- Quiz Content -->
     <main class="max-w-4xl mx-auto px-6 py-8">
+      <!-- Settings Panel -->
+      <div v-if="showSettings" class="bg-neutral-900 border border-neutral-800 rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-neutral-100">Configurações do Quiz</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            @click="showSettings = false"
+            class="border-neutral-700 text-neutral-200 hover:bg-neutral-800"
+          >
+            ✕ Fechar
+          </Button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-neutral-800 rounded-lg">
+            <div>
+              <h4 class="font-medium text-neutral-100 mb-1">Modo de Resposta Livre</h4>
+              <p class="text-sm text-neutral-400">
+                Habilita questões com campo de texto além das de múltipla escolha
+              </p>
+            </div>
+            <Toggle
+              :pressed="settingsStore.enableInputMode"
+              @update:pressed="settingsStore.toggleInputMode"
+              class="data-[state=on]:bg-blue-600 data-[state=on]:text-white"
+            >
+              {{ settingsStore.enableInputMode ? 'Ativado' : 'Desativado' }}
+            </Toggle>
+          </div>
+        </div>
+      </div>
       <!-- Loading State -->
       <div v-if="quizStore.isLoading" class="flex items-center justify-center py-20">
         <div class="text-center">
@@ -246,17 +286,21 @@ import { toast } from 'vue-sonner'
 import { useAuthStore } from '@/app/stores/auth'
 import { useQuizStore } from '@/app/stores/quiz'
 import { useGameLogicStore } from '@/app/stores/game'
+import { useSettingsStore } from '@/app/stores/settings'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Toggle } from '@/components/ui/toggle'
 import type { QuestionType, AnswerMode } from '@/core/models/types'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const quizStore = useQuizStore()
 const gameStore = useGameLogicStore()
+const settingsStore = useSettingsStore()
 
 const userAnswer = ref('')
 const selectedOption = ref('')
+const showSettings = ref(false)
 
 const canSubmit = computed(() => {
   if (!gameStore.currentQuestion) return false
@@ -331,6 +375,9 @@ const goToDashboard = () => {
 
 // Carrega os termos quando a página é montada
 onMounted(async () => {
+  // Carrega as configurações salvas
+  settingsStore.loadSettings()
+
   if (quizStore.allTerms.length === 0) {
     await quizStore.fetchTerms()
   }

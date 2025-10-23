@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useQuizStore } from './quiz'
 import { useAuthStore } from './auth'
+import { useSettingsStore } from './settings'
 import { updateUserGeneralStats } from '@/core/features/user'
 import { updateUserTermStat } from '@/core/features/terms'
 import type { AnswerMode, AnswerResult, Question, QuestionType, Term } from '@/core/models/types'
@@ -35,6 +36,7 @@ const normalizeString = (str: string): string => {
 export const useGameLogicStore = defineStore('gameLogic', () => {
   const quizStore = useQuizStore()
   const authStore = useAuthStore()
+  const settingsStore = useSettingsStore()
 
   const currentQuestion = ref<Question | null>(null)
   const lastResult = ref<AnswerResult | null>(null)
@@ -51,7 +53,13 @@ export const useGameLogicStore = defineStore('gameLogic', () => {
     const correctTerm = getRandomItem(quizStore.allTerms)
 
     const type: QuestionType = Math.random() < 0.5 ? 'definition_to_term' : 'term_to_definition'
-    const mode: AnswerMode = Math.random() < 0.5 ? 'input' : 'multiple_choice'
+
+    // Se o modo de input estiver habilitado, escolhe aleatoriamente, senão sempre múltipla escolha
+    const mode: AnswerMode = settingsStore.enableInputMode
+      ? Math.random() < 0.5
+        ? 'input'
+        : 'multiple_choice'
+      : 'multiple_choice'
 
     let questionText = ''
     let correctAnswer = ''
